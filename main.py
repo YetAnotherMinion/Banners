@@ -27,6 +27,8 @@ def prepare_banner(username):
     #make a request to code abbey site
     code_abbey_api = 'http://www.codeabbey.com/index/api_user/'
     target_user = code_abbey_api + username
+    #TODO add user agent string and other relevant headers instead
+    # of relying on god knows what default from python urllopen
     req = urllib2.Request(target_user)
     try:
         api_response = urllib2.urlopen(req)

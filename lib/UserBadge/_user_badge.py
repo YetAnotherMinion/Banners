@@ -59,13 +59,15 @@ class UserBadge(object):
             #set this to default for use by the other derived fields
             self.rank = 'default'
 
+        #Padding for the sides of the banner
         self.pad = 5
         #configure square user image
         self.tb_sz = 45
         self.tb_xo = self.W - self.tb_sz - self.pad
         self.tb_yo = self.pad
 
-        #configure size of flag
+        #configure size of flag, right now this should be constant
+        #as all flag files are the same size
         self.flg_W = 16
         self.flg_H = 11
         self.flag_spacing = 5
@@ -73,11 +75,19 @@ class UserBadge(object):
         #configure size available for user name
         self.nm_xo = self.pad
         self.nm_yo = self.pad
+        #determines the allowable idth by subtracting from the total width
+        #of the banner the edge padding, space for the thumbnail image on right
+        # and space for the user flag between the username field and the thumbnail
         self.un_allow_width = (self.W - self.nm_xo - \
                             self.flag_spacing - self.flg_W - self.pad \
                              - self.tb_sz - self.pad)
+        #baseline offset is a barrier, that the user name field will not write any
+        #pixels below this offest. Right now the username is floated so that it is
+        #vertically centered between the baseline and the top of the banner minus some
+        #padding
         self.usernm_baseline_offset = self.H * 0.35
-        self.usernm_height = 35
+        #pretty sure this is a dummy value for now
+        self.usernm_height = self.usernm_baseline_offset - self.pad
 
     def AddUserName(self, name, rank = "default"):
         #parameters to adjust name location and appearance
@@ -117,7 +127,11 @@ class UserBadge(object):
         self.draw.text((self.nm_xo, self.nm_yo), name, 
                         font = unicode_font, fill = nm_fnt_color)
     
-    def AddCountryFlag(self, country):
+    def AddCountryFlag(self, country = None):
+        #FATALISM: we just keep this small set in memory because it is so small
+        #and with the current political climate it will only get smaller
+        #as superpowers absorb smaller states until there is only Asia
+        #Europe, Americas, and neutral Switzerland left
         iso_country_codes = set(['BD', 'BE', 'BF', 'BG', 'BA', 'BB', 'WF', 
             'BM', 'BN', 'BO', 'BH', 'BI', 'BJ', 'BT', 'JM', 'BV', 'BW', 'WS',
             'BR', 'BS', 'JE', 'BY', 'BZ', 'RU', 'RW', 'RS', 'TL', 'RE', 'TM',
@@ -144,6 +158,9 @@ class UserBadge(object):
         if country in iso_country_codes:
             self.flag_name = 'flags/' + country.lower() + '.gif'
         else:
+            #this flag is a question mark, and is catch all for unknown country
+            #codes returned by API, if the API does not return a country code
+            #at all, this routine is currently (7aa9f0555) not called
             self.flag_name = 'flags/zz.gif'
 
     def AddNumSolved(self, num_solved = 0):
